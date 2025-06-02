@@ -40,6 +40,11 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 
+app.use(cors({
+  origin: ['https://silverstar-frontend.vercel.app'], // Replace with your Vercel domain
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true, // If using cookies/auth
+}));
 app.use(cors(corsOptions));
 
 // Body parsing middleware
