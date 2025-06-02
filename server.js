@@ -66,6 +66,15 @@ app.get('/health', (req, res) => {
   });
 });
 
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV
+  });
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
