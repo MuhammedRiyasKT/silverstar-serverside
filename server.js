@@ -88,7 +88,7 @@ const server = app.listen(PORT, () => {
   console.log(`
 🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}
 📱 Health check: http://localhost:${PORT}/health
-📚 API Base URL: http://localhost:${PORT}/api
+📚 API Base URL: http://localhost:${PORT}
   `);
 });
 
