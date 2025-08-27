@@ -38,3 +38,5 @@ Thumbs.db
 # Build
 dist/
 build/
+
+/config/digital-qr-order-firebase-adminsdk-fbsvc-940f3d3cdc.json
