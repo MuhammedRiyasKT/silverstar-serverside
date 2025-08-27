@@ -157,7 +157,7 @@ const app = express();
 const server = http.createServer(app);
 
 // ---------- Firebase Admin Init ✅ ----------
-const serviceAccount = require("./config/digital-qr-order-firebase-adminsdk-fbsvc-940f3d3cdc.json");
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
 if (!admin.apps.length) {
   admin.initializeApp({
