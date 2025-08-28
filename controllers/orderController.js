@@ -441,8 +441,8 @@ const createOrder = async (req, res) => {
   try {
     // 🏨 Fixed hotel location from settings
     const settings = await Settings.findOne();
-    const HOTEL_LAT = settings?.hotelLat ?? 10.841156;
-    const HOTEL_LON = settings?.hotelLon ?? 76.109505;
+    const HOTEL_LAT = settings?.hotelLat ? parseFloat(settings.hotelLat.toString()) : 10.841156;
+    const HOTEL_LON = settings?.hotelLon ? parseFloat(settings.hotelLon.toString()) : 76.109505;
 
     const { tableId, userId, items, notes, latitude, longitude } = req.body;
 
@@ -461,7 +461,10 @@ const createOrder = async (req, res) => {
       });
     }
 
-    const distance = getDistanceFromLatLonInMeters(latitude, longitude, HOTEL_LAT, HOTEL_LON);
+    const userLat = parseFloat(latitude);
+    const userLon = parseFloat(longitude);
+
+    const distance = getDistanceFromLatLonInMeters(userLat, userLon, HOTEL_LAT, HOTEL_LON);
     if (distance > 150) {
       return res.status(403).json({
         success: false,
