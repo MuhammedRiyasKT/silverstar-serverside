@@ -465,10 +465,10 @@ const createOrder = async (req, res) => {
     const userLon = parseFloat(longitude);
 
     const distance = getDistanceFromLatLonInMeters(userLat, userLon, HOTEL_LAT, HOTEL_LON);
-    if (distance > 150) {
+    if (distance > 20000) {
       return res.status(403).json({
         success: false,
-        message: "You are outside the hotel. Orders can only be placed inside (within 150m).",
+        message: "You are outside the hotel. Orders can only be placed inside (within 20000m).",
       });
     }
 
