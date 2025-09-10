@@ -62,7 +62,7 @@
 //     });
 //   } catch (error) {
 //     console.error('Create order error:', error);
-    
+
 //     if (error.name === 'ValidationError') {
 //       const message = Object.values(error.errors).map(val => val.message).join(', ');
 //       return res.status(400).json({
@@ -411,9 +411,9 @@ function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(lat1 * Math.PI / 180) *
-      Math.cos(lat2 * Math.PI / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+    Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
@@ -465,10 +465,10 @@ const createOrder = async (req, res) => {
     const userLon = parseFloat(longitude);
 
     const distance = getDistanceFromLatLonInMeters(userLat, userLon, HOTEL_LAT, HOTEL_LON);
-    if (distance > 20000) {
+    if (distance > 50) {
       return res.status(403).json({
         success: false,
-        message: "You are outside the hotel. Orders can only be placed inside (within 20000m).",
+        message: "You are outside the hotel. Orders can only be placed inside (within 50m).",
       });
     }
 
