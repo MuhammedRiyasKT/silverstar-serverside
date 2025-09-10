@@ -136,7 +136,9 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const { Server } = require('socket.io');
 const http = require('http');
-const admin = require("firebase-admin");   // ✅ Firebase Admin SDK
+const admin = require("firebase-admin");
+const fs = require("fs")
+const path = require("path")
 
 const connectDB = require('./config/database');
 const errorHandler = require('./middleware/errorHandler');
@@ -157,7 +159,12 @@ const app = express();
 const server = http.createServer(app);
 
 // ---------- Firebase Admin Init ✅ ----------
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT;
+
+// load and parse JSON file
+const serviceAccount = JSON.parse(
+  fs.readFileSync(path.resolve(serviceAccountPath), "utf8")
+);
 
 if (!admin.apps.length) {
   admin.initializeApp({
