@@ -402,20 +402,29 @@ const MenuItem = require("../models/MenuItem");
 const Settings = require("../models/Settings");
 const FcmToken = require("../models/FcmToken");
 const admin = require("firebase-admin");
+const turf = require('@turf/turf');
 
 // 📌 Helper: Haversine formula to calculate distance
 function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
-  const R = 6371000; // radius of Earth in meters
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1 * Math.PI / 180) *
-    Math.cos(lat2 * Math.PI / 180) *
-    Math.sin(dLon / 2) *
-    Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
+  try {
+    const from = turf.point([parseFloat(lon1), parseFloat(lat1)]);
+    const to = turf.point([parseFloat(lon2), parseFloat(lat2)]);
+    const distance = turf.distance(from, to, { units: 'meters' });
+    return distance;
+  } catch (error) {
+    console.error("Turf.js distance calculation error:", error);
+    // Fallback to Haversine formula if Turf.js fails
+    const R = 6371000;
+    const dLat = (parseFloat(lat2) - parseFloat(lat1)) * Math.PI / 180;
+    const dLon = (parseFloat(lon2) - parseFloat(lon1)) * Math.PI / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(parseFloat(lat1) * Math.PI / 180) *
+      Math.cos(parseFloat(lat2) * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
 }
 
 // 📌 Helper: send FCM notification
@@ -443,6 +452,7 @@ const createOrder = async (req, res) => {
     const settings = await Settings.findOne();
     const HOTEL_LAT = settings?.hotelLat ? parseFloat(settings.hotelLat.toString()) : 10.841156;
     const HOTEL_LON = settings?.hotelLon ? parseFloat(settings.hotelLon.toString()) : 76.109505;
+    const GEOFENCE_RADIUS = settings?.geofenceRadius || 50; // meters
 
     const { tableId, userId, items, notes, latitude, longitude } = req.body;
 
@@ -465,10 +475,10 @@ const createOrder = async (req, res) => {
     const userLon = parseFloat(longitude);
 
     const distance = getDistanceFromLatLonInMeters(userLat, userLon, HOTEL_LAT, HOTEL_LON);
-    if (distance > 50) {
+    if (distance > GEOFENCE_RADIUS) {
       return res.status(403).json({
         success: false,
-        message: "You are outside the hotel. Orders can only be placed inside (within 50m).",
+        message: `You are outside the hotel. Orders can only be placed within ${GEOFENCE_RADIUS}m of the hotel.`,
       });
     }
 

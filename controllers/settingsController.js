@@ -9,6 +9,7 @@ const getSettings = async (req, res) => {
       settings = await Settings.create({
         hotelLat: mongoose.Types.Decimal128.fromString("10.841156"),
         hotelLon: mongoose.Types.Decimal128.fromString("76.109505"),
+        geofenceRadius: 50,
       });
     }
     res.json({
@@ -16,6 +17,7 @@ const getSettings = async (req, res) => {
       data: {
         hotelLat: settings.hotelLat.toString(),
         hotelLon: settings.hotelLon.toString(),
+        geofenceRadius: settings.geofenceRadius || 50,
       },
     });
   } catch (error) {
@@ -24,20 +26,24 @@ const getSettings = async (req, res) => {
   }
 };
 
+
 // Update settings
 const updateSettings = async (req, res) => {
   try {
-    const { hotelLat, hotelLon } = req.body;
+    const { hotelLat, hotelLon, geofenceRadius } = req.body;
+    console.log(hotelLat, hotelLon, geofenceRadius)
     let settings = await Settings.findOne();
 
     if (!settings) {
       settings = await Settings.create({
         hotelLat: mongoose.Types.Decimal128.fromString(hotelLat.toString()),
         hotelLon: mongoose.Types.Decimal128.fromString(hotelLon.toString()),
+        geofenceRadius: geofenceRadius || 50,
       });
     } else {
       settings.hotelLat = mongoose.Types.Decimal128.fromString(hotelLat.toString());
       settings.hotelLon = mongoose.Types.Decimal128.fromString(hotelLon.toString());
+      settings.geofenceRadius = geofenceRadius || 50;
       await settings.save();
     }
 
@@ -46,6 +52,7 @@ const updateSettings = async (req, res) => {
       data: {
         hotelLat: settings.hotelLat.toString(),
         hotelLon: settings.hotelLon.toString(),
+        geofenceRadius: settings.geofenceRadius,
       },
     });
   } catch (error) {
